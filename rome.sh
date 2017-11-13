@@ -12,11 +12,11 @@ green=$(tput setaf 2)
 yellow=$(tput setaf 3)
 blue=$(tput setaf 4)
 #浅红
-magenta=$(tput setaf 5) 
+magenta=$(tput setaf 5)
 #青色
 cyan=$(tput setaf 6)
 #白色
-white=$(tput setaf 7) 
+white=$(tput setaf 7)
 reverse=$(tput rev)
 reset=$(tput sgr0)
 
@@ -24,15 +24,25 @@ remo_dir=".remo"
 
 root=`pwd`
 
-for file in $root/*
-do 
-	if test -f $file
+#暂时只能扫描一级目录下的 build.gradle 文件
+scanGradleProjects() {
+	tempRootDir=$1
+	if test -d ${tempRootDir}
 	then
-		echo $file 是文件
+	    for moduleDir in ${tempRootDir}/*
+	    do
+	        if test -d ${moduleDir}
+	        then
+                if test -e ${moduleDir}/build.gradle
+                then
+                    echo ${moduleDir} >> ${tempRootDir}/modules
+                fi
+	        fi
+	    done
 	fi
-	if test -d $file
-	then echo $file 是目录
-	fi
-done
+}
 
-echo "End"
+if test -e ${root}/modules
+then echo '' > ${root}/modules
+fi
+scanGradleProjects ${root}
