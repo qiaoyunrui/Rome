@@ -20,7 +20,8 @@ white=$(tput setaf 7)
 reverse=$(tput rev)
 reset=$(tput sgr0)
 
-remo_dir=".remo"
+rome_dir=".rome"
+modules_list="modules.properties"
 
 root=`pwd`
 
@@ -35,14 +36,43 @@ scanGradleProjects() {
 	        then
                 if test -e ${moduleDir}/build.gradle
                 then
-                    echo ${moduleDir} >> ${tempRootDir}/modules
+                    mkdir ${tempRootDir}/${rome_dir}/`basename ${moduleDir}`
+                    echo ${moduleDir} >> ${tempRootDir}/${rome_dir}/${modules_list}
                 fi
 	        fi
 	    done
 	fi
 }
 
-if test -e ${root}/modules
-then echo '' > ${root}/modules
-fi
-scanGradleProjects ${root}
+# 初始化
+# 生成 ".remo" 文件夹
+# 扫描各个模块，生成仓库文件夹
+init() {
+    if test -e ${root}/${rome_dir}
+    then
+        echo -e "${red}Remo has been initialized!${red}"
+        return
+    fi
+    mkdir ${root}/${rome_dir}
+    touch ${root}/${modules_list}
+    scanGradleProjects ${root}
+}
+
+clear() {
+    if [ ! -e ${root}/${rome_dir} ]
+    then
+        echo -e "${red}Remo has not been initialized!${red}"
+        return
+    fi
+    rm -rf ${root}/${rome_dir}
+    echo "${green}done!${green}"
+}
+
+case $1 in
+"init")
+    init
+    ;;
+"clear")
+    clear
+    ;;
+esac
