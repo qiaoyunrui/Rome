@@ -68,11 +68,28 @@ clear() {
     echo "${green}done!${green}"
 }
 
+# 编译单个
+build() {
+    moduleName=$1
+    if [ ${moduleName}=="" ]
+    then
+    buildAll
+    fi
+}
+
+# 编译所有的模块，并更新 aar 或者 jar
+buildAll() {
+    echo "buildAll"
+}
+
 case $1 in
 "init")
     init
     ;;
 "clear")
     clear
+    ;;
+"build")
+    build $2
     ;;
 esac
