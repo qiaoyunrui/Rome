@@ -20,76 +20,29 @@ white=$(tput setaf 7)
 reverse=$(tput rev)
 reset=$(tput sgr0)
 
-rome_dir=".rome"
-modules_list="modules.properties"
+gradle_file_url="https://github.com/qiaoyunrui/Rome/blob/master/gradle/rome.gradle"
+gradle_name="rome.gradle"
 
-root=`pwd`
-
-#暂时只能扫描一级目录下的 build.gradle 文件
-scanGradleProjects() {
-	tempRootDir=$1
-	if test -d ${tempRootDir}
-	then
-	    for moduleDir in ${tempRootDir}/*
-	    do
-	        if test -d ${moduleDir}
-	        then
-                if test -e ${moduleDir}/build.gradle
-                then
-                    mkdir ${tempRootDir}/${rome_dir}/`basename ${moduleDir}`
-                    echo ${moduleDir} >> ${tempRootDir}/${rome_dir}/${modules_list}
-                fi
-	        fi
-	    done
-	fi
-}
-
-# 初始化
-# 生成 ".remo" 文件夹
-# 扫描各个模块，生成仓库文件夹
 init() {
-    if test -e ${root}/${rome_dir}
+    if [ -e ${gradle_name} ]
     then
-        echo -e "${red}Remo has been initialized!${red}"
+        echo "${red}The ${gradle_name} has existed!${red}"
         return
     fi
-    mkdir ${root}/${rome_dir}
-    touch ${root}/${modules_list}
-    scanGradleProjects ${root}
+    wget -o ${gradle_name} ${gradle_file_url}
+    echo "${magenta}Download ${gradle_name} Done!${magenta}"
+    gradle -b ${gradle_name} "hello"
 }
 
-clear() {
-    if [ ! -e ${root}/${rome_dir} ]
-    then
-        echo -e "${red}Remo has not been initialized!${red}"
-        return
-    fi
-    rm -rf ${root}/${rome_dir}
-    echo "${green}done!${green}"
-}
+if [ $# -eq 0 ]
+then
+    echo "${yellow}Rome.gradle${yellow}"
+    exit 0
+fi
 
-# 编译单个
-build() {
-    moduleName=$1
-    if [ ${moduleName}=="" ]
-    then
-    buildAll
-    fi
-}
-
-# 编译所有的模块，并更新 aar 或者 jar
-buildAll() {
-    echo "buildAll"
-}
 
 case $1 in
 "init")
     init
-    ;;
-"clear")
-    clear
-    ;;
-"build")
-    build $2
     ;;
 esac

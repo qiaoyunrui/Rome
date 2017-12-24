@@ -1,3 +1,11 @@
-task("new_build") {
-    println "HelloWorld"
+
+task hello() {
+    doLast {
+        println "Hello,Rome!"
+    }
 }
+/*
+task hello(type: Copy) {
+    from "../cli"
+    into "../test"
+}*/
